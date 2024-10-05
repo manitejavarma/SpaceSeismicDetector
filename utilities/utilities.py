@@ -19,7 +19,7 @@ def plot_characteristic_function(stream_file, cft):
     plt.show()
 
 
-def plot_seismic_event_miniseed(cft, stream_file, on, off, off1):
+def plot_seismic_event_miniseed(cft, stream_file, on, off, on_off):
     trace = stream_file.traces[0].copy()
     tr_times = trace.times()
     tr_data = trace.data
