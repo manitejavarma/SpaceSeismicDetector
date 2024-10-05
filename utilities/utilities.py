@@ -3,6 +3,7 @@ from obspy.signal.trigger import trigger_onset
 import matplotlib.pyplot as plt
 import pandas as pd
 from obspy import read
+import os
 
 
 def plot_characteristic_function(stream_file, cft):
@@ -50,3 +51,43 @@ def load_single_file(file_path, file_type="csv"):
         raise ValueError("Unsupported file type. Use 'csv' or 'mseed'.")
 
     return data
+
+
+def is_trace_count_greater_than_one(stream_file):
+    return len(stream_file.traces) > 1
+
+
+def get_mseed_files(root_directory):
+    """
+    Find all MiniSEED files in the specified directory and its subdirectories.
+
+    Parameters:
+    root_directory (str): Path to the root directory.
+
+    Returns:
+    list: List of MiniSEED file paths.
+    """
+    mseed_files = []
+    for dirpath, _, filenames in os.walk(root_directory):
+        for file in filenames:
+            if file.endswith('.mseed'):
+                mseed_files.append(os.path.join(dirpath, file))
+    return mseed_files
+
+
+def check_trace_count():
+    directory = [r'C:\Users\Mani Teja Varma\Documents\NASA\space_apps_2024_seismic_detection\data\lunar\test\data']
+
+    for file in get_mseed_files(directory[0]):
+        stream_file = load_single_file(file, file_type="mseed")
+        if is_trace_count_greater_than_one(stream_file):
+            print(f"Trace count is greater than 1 for file {file}")
+
+    print("all are using only one trace")
+
+
+if __name__ == "__main__":
+    # Test if any of the files in train or test are using more than one trace. If using more than one trace,
+    # we could somehow leverage it to make an accurate model
+    #check_trace_count() # result: all are using only one trace
+    pass
