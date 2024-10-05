@@ -35,20 +35,19 @@ def get_train_data(target='lunar'):
     return train_data
 
 
-def detect_events(target='lunar'):
-    get_train_data('lunar')
+def detect_events(target='lunar', plot = True):
 
     # for each file in the train_data, load the file and run the algo
     # save the results in a csv file with the same name as the mseed file
     detection_times = []
     relative_detection_times = []
     fnames = []
-    for file in get_train_data('lunar'):
+    for file in get_train_data(target):
         stream_file = load_single_file(file, file_type="mseed")
         tr = stream_file.traces[0].copy()
         tr_times = tr.times()
         tr_data = tr.data
-        on_off = sta_lta_model(sta_len=120, lta_len=600, stream_file=stream_file, plot=False)
+        on_off = sta_lta_model(sta_len=120, lta_len=600, stream_file=stream_file, plot = plot)
 
         starttime = tr.stats.starttime.datetime
 
@@ -69,8 +68,8 @@ def detect_events(target='lunar'):
                                    'time_rel(sec)': relative_detection_times})
 
     # save dataframe to csv
-    detect_df.to_csv('../input/output.csv', index=False)
+    detect_df.to_csv(f'../input/{target}-output.csv', index=False)
 
 
 if __name__ == "__main__":
-    detect_events(target='lunar')
+    detect_events(target='mars', plot=False)
