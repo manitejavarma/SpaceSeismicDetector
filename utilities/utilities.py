@@ -19,11 +19,7 @@ def plot_characteristic_function(stream_file, cft):
     plt.show()
 
 
-def plot_seismic_event_miniseed(cft, stream_file):
-    thr_on = 4
-    thr_off = 1.5
-    on_off = np.array(trigger_onset(cft, thr_on, thr_off))
-
+def plot_seismic_event_miniseed(cft, stream_file, on, off, off1):
     trace = stream_file.traces[0].copy()
     tr_times = trace.times()
     tr_data = trace.data
@@ -54,4 +50,3 @@ def load_single_file(file_path, file_type="csv"):
         raise ValueError("Unsupported file type. Use 'csv' or 'mseed'.")
 
     return data
-
