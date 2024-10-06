@@ -93,6 +93,8 @@ def filter_data(stream_file=None, plot=False):
 
         prev_lowcut, prev_highcut = lowcut, highcut
 
+    return filtered_data
+
     if plot:
         plt.figure(figsize=(10, 6))
         plt.plot(all_time, all_velocity, label='Original Velocity Data', color='red')
