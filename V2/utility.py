@@ -71,21 +71,21 @@ def get_latest_train_data(directory='./output/'):
 
     # Find the latest file based on the timestamp in the filename
     latest_file = max(files, key=os.path.getctime) if files else None
-
+    print("File to be loaded:", latest_file)
     return latest_file
 
 
 def load_train_data():
     # Load the data from the pickle file
 
-    X_train_loaded, event_labels_train_loaded, start_labels_train_loaded = pickle.load(open(get_latest_train_data(),
-                                                                                            'rb'))
+    X_train_loaded, start_labels_train_loaded = pickle.load(open(get_latest_train_data(),
+                                                                 'rb'))
 
     # Check the loaded data
     print("Loaded X_train shape:", X_train_loaded.shape)
-    print("Loaded event_labels_train shape:", event_labels_train_loaded.shape)
     print("Loaded start_labels_train shape:", start_labels_train_loaded.shape)
 
 
 if __name__ == '__main__':
-    create_train_data_lunar()
+    # create_train_data_lunar()
+    load_train_data()
