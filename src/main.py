@@ -1,11 +1,6 @@
-
 from config import *
 from models.sta_lta import sta_lta_model
 from utilities.utilities import load_single_file
-
-# load data 1. mars / lunar.
-# run algo
-# plot results
 
 # stream_file[0] refers to first trace in the stream. And traces are number of instruments used to record the data
 if __name__ == "__main__":

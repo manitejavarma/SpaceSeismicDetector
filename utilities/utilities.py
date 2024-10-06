@@ -5,6 +5,8 @@ import pandas as pd
 from obspy import read
 import os
 
+from src.config import DATA_DIR
+
 
 def plot_characteristic_function(stream_file, cft):
     trace = stream_file.traces[0].copy()
@@ -20,7 +22,7 @@ def plot_characteristic_function(stream_file, cft):
     plt.show()
 
 
-def plot_seismic_event_miniseed(cft, stream_file, on, off, on_off):
+def plot_seismic_event_start_end_miniseed(cft, stream_file, on, off, on_off):
     trace = stream_file.traces[0].copy()
     tr_times = trace.times()
     tr_data = trace.data
@@ -37,6 +39,20 @@ def plot_seismic_event_miniseed(cft, stream_file, on, off, on_off):
     # Plot seismogram
     ax.plot(tr_times, tr_data)
     ax.set_xlim([min(tr_times), max(tr_times)])
+    ax.legend()
+    plt.savefig('seismic_event.png')
+    plt.show()
+
+def plot_seismic_event_miniseed(tr_data, tr_time, events):
+    # Plot on and off triggers
+    fig, ax = plt.subplots(1, 1, figsize=(12, 3))
+    for i in np.arange(0, len(events)):
+        event = events[i]
+        ax.axvline(x=tr_time[event], color='red', label='Trig. On')
+
+    # Plot seismogram
+    ax.plot(tr_time, tr_data)
+    ax.set_xlim([min(tr_time), max(tr_time)])
     ax.legend()
     plt.savefig('seismic_event.png')
     plt.show()
@@ -76,9 +92,18 @@ def get_mseed_files(root_directory):
 
 
 def check_trace_count():
-    directory = [r'C:\Users\Mani Teja Varma\Documents\NASA\space_apps_2024_seismic_detection\data\lunar\test\data']
+    directory = DATA_DIR
+    for file in get_mseed_files(directory):
+        stream_file = load_single_file(file, file_type="mseed")
+        if is_trace_count_greater_than_one(stream_file):
+            print(f"Trace count is greater than 1 for file {file}")
 
-    for file in get_mseed_files(directory[0]):
+    print("all are using only one trace")
+
+def algo_on_train_test(algo = "sta_lta", plot = True):
+
+    directory = DATA_DIR
+    for file in get_mseed_files(directory):
         stream_file = load_single_file(file, file_type="mseed")
         if is_trace_count_greater_than_one(stream_file):
             print(f"Trace count is greater than 1 for file {file}")
@@ -87,7 +112,10 @@ def check_trace_count():
 
 
 if __name__ == "__main__":
+    # Observation 1
     # Test if any of the files in train or test are using more than one trace. If using more than one trace,
     # we could somehow leverage it to make an accurate model
-    #check_trace_count() # result: all are using only one trace
+    # check_trace_count() # result: all are using only one trace
+
+    # Observation 2
     pass

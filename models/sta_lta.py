@@ -22,6 +22,6 @@ def sta_lta_model(sta_len=120,
     if plot:
         # Plot characteristic function
         plot_characteristic_function(stream_file, cft)
-        plot_seismic_event_miniseed(cft, stream_file, thr_on, thr_off, on_off)
+        plot_seismic_event_start_end_miniseed(cft, stream_file, thr_on, thr_off, on_off)
 
-    return on_off
+    return on_off[:, 0]
