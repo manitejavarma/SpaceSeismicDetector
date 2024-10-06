@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pywt
 from scipy.signal import spectrogram
 from obspy.signal.trigger import classic_sta_lta
 

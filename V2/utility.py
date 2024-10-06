@@ -81,9 +81,7 @@ def load_train_data():
     X_train_loaded, start_labels_train_loaded = pickle.load(open(get_latest_train_data(),
                                                                  'rb'))
 
-    # Check the loaded data
-    print("Loaded X_train shape:", X_train_loaded.shape)
-    print("Loaded start_labels_train shape:", start_labels_train_loaded.shape)
+    return X_train_loaded, start_labels_train_loaded
 
 
 if __name__ == '__main__':
