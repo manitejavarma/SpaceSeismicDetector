@@ -3,6 +3,9 @@ from obspy.signal.trigger import trigger_onset
 import matplotlib.pyplot as plt
 import pandas as pd
 from obspy import read
+import os
+
+from src.config import DATA_DIR
 
 
 def plot_characteristic_function(stream_file, cft):
@@ -19,7 +22,7 @@ def plot_characteristic_function(stream_file, cft):
     plt.show()
 
 
-def plot_seismic_event_miniseed(cft, stream_file, on, off, on_off):
+def plot_seismic_event_start_end_miniseed(cft, stream_file, on, off, on_off):
     trace = stream_file.traces[0].copy()
     tr_times = trace.times()
     tr_data = trace.data
@@ -40,6 +43,20 @@ def plot_seismic_event_miniseed(cft, stream_file, on, off, on_off):
     plt.savefig('seismic_event.png')
     plt.show()
 
+def plot_seismic_event_miniseed(tr_data, tr_time, events):
+    # Plot on and off triggers
+    fig, ax = plt.subplots(1, 1, figsize=(12, 3))
+    for i in np.arange(0, len(events)):
+        event = events[i]
+        ax.axvline(x=tr_time[event], color='red', label='Trig. On')
+
+    # Plot seismogram
+    ax.plot(tr_time, tr_data)
+    ax.set_xlim([min(tr_time), max(tr_time)])
+    ax.legend()
+    plt.savefig('seismic_event.png')
+    plt.show()
+
 
 def load_single_file(file_path, file_type="csv"):
     if file_type == "csv":
@@ -50,3 +67,55 @@ def load_single_file(file_path, file_type="csv"):
         raise ValueError("Unsupported file type. Use 'csv' or 'mseed'.")
 
     return data
+
+
+def is_trace_count_greater_than_one(stream_file):
+    return len(stream_file.traces) > 1
+
+
+def get_mseed_files(root_directory):
+    """
+    Find all MiniSEED files in the specified directory and its subdirectories.
+
+    Parameters:
+    root_directory (str): Path to the root directory.
+
+    Returns:
+    list: List of MiniSEED file paths.
+    """
+    mseed_files = []
+    for dirpath, _, filenames in os.walk(root_directory):
+        for file in filenames:
+            if file.endswith('.mseed'):
+                mseed_files.append(os.path.join(dirpath, file))
+    return mseed_files
+
+
+def check_trace_count():
+    directory = DATA_DIR
+    for file in get_mseed_files(directory):
+        stream_file = load_single_file(file, file_type="mseed")
+        if is_trace_count_greater_than_one(stream_file):
+            print(f"Trace count is greater than 1 for file {file}")
+
+    print("all are using only one trace")
+
+def algo_on_train_test(algo = "sta_lta", plot = True):
+
+    directory = DATA_DIR
+    for file in get_mseed_files(directory):
+        stream_file = load_single_file(file, file_type="mseed")
+        if is_trace_count_greater_than_one(stream_file):
+            print(f"Trace count is greater than 1 for file {file}")
+
+    print("all are using only one trace")
+
+
+if __name__ == "__main__":
+    # Observation 1
+    # Test if any of the files in train or test are using more than one trace. If using more than one trace,
+    # we could somehow leverage it to make an accurate model
+    # check_trace_count() # result: all are using only one trace
+
+    # Observation 2
+    pass
