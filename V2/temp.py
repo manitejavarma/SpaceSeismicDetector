@@ -80,3 +80,88 @@ def load_train_data():
 if __name__ == '__main__':
     create_train_data_lunar()
 
+
+'''for cpu max use'''
+import glob
+import os
+import pickle
+import time
+import multiprocessing
+from functools import partial
+
+from obspy import read
+import numpy as np
+from V2.config import WINDOW_SIZE, STEP_SIZE
+from V2.preprocess import sliding_window
+from src.config import DATA_DIR
+from tqdm import tqdm
+import pandas as pd
+
+
+def process_file(row, data_directory):
+    filename = row['filename']
+    mseed_file = os.path.join(data_directory, f'{filename}.mseed')
+    if os.path.exists(mseed_file):
+        st = read(mseed_file)
+        tr = st.traces[0].copy()
+        tr_times = tr.times()
+        tr_data = tr.data
+
+        spec, labels_file = sliding_window(tr_data, tr_times, st[0].stats.sampling_rate, WINDOW_SIZE, STEP_SIZE)
+        return spec[..., np.newaxis], labels_file
+    return None, None
+
+
+def create_train_data_lunar():
+    X_train = None
+    labels = None
+
+    # Load the catalog using cuDF
+    cat_directory = DATA_DIR + '/lunar/training/catalogs/'
+    cat_file = cat_directory + 'apollo12_catalog_GradeA_final.csv'
+    cat = pd.read_csv(cat_file)
+
+    # Directory containing the training data
+    data_directory = DATA_DIR + '/lunar/training/data/S12_GradeA/'
+
+    # Create a pool of worker processes
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
+
+    # Use partial to pass additional arguments to the worker function
+    worker = partial(process_file, data_directory=data_directory)
+
+    # Process files in parallel
+    results = list(tqdm(pool.imap(worker, [row for _, row in cat.iterrows()]), total=len(cat)))
+
+    pool.close()
+    pool.join()
+
+    for spec, labels_file in results:
+        if spec is not None and labels_file is not None:
+            if X_train is None:
+                X_train = spec
+            else:
+                X_train = np.concatenate((X_train, spec), axis=0)
+
+            if labels is None:
+                labels = labels_file
+            else:
+                labels = np.concatenate((labels, labels_file), axis=0)
+
+    # Save the training data
+    save_train_data(X_train, labels)
+
+
+def save_train_data(X_train, labels):
+    # Save the training data and labels to a compressed NumPy file
+    timestamp = int(time.time())
+    # Save all data to a single pickle file
+    with open(os.path.join('./output/', f'train_data_lunar_{timestamp}.pkl'), 'wb') as f:
+        pickle.dump((X_train, labels), f)
+
+    print("Training data saved successfully to pickle file.")
+
+
+if __name__ == '__main__':
+    create_train_data_lunar()
+
