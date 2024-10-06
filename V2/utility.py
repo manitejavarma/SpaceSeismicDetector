@@ -36,7 +36,9 @@ def create_train_data_lunar():
             tr_times = tr.times()
             tr_data = tr.data
 
-            spec, labels_file = sliding_window(tr_data, tr_times, st[0].stats.sampling_rate, WINDOW_SIZE,
+            event_starts = cat[cat['filename'] == filename]['time_rel(sec)'].to_numpy()
+
+            spec, labels_file = sliding_window(tr_data,event_starts, st[0].stats.sampling_rate, WINDOW_SIZE,
                                                STEP_SIZE)
 
             X_train_file = spec[..., np.newaxis]
@@ -85,5 +87,6 @@ def load_train_data():
 
 
 if __name__ == '__main__':
-    # create_train_data_lunar()
-    load_train_data()
+    create_train_data_lunar()
+    # load_train_data()
+

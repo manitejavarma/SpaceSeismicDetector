@@ -33,6 +33,5 @@ class ResNetSeismic(nn.Module):
 
 # Initialize the model and move it to GPU
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print(device)
+
 model = ResNetSeismic().to(device)
-print(next(model.parameters()).device)

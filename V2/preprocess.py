@@ -15,6 +15,8 @@ def sliding_window(data, event_starts, sampling_rate, window_size=1000, step_siz
     labels = []
     spectrogram = []
 
+    unique_event_starts = []
+
     for i in range(num_windows):
         window_start = i * step_size
         window_end = window_start + window_size
@@ -31,10 +33,12 @@ def sliding_window(data, event_starts, sampling_rate, window_size=1000, step_siz
 
         # If there's an event start within the window, calculate its relative position
         if event_start_in_window:
-            relative_event_time = event_start_in_window[0] - window_start
+            relative_event_time = int(event_start_in_window[0]) - window_start
+            unique_event_starts.append(relative_event_time)
         else:
             relative_event_time = -1  # No event in this window
 
         labels.append(relative_event_time)
+    print(f'Unique values of relative_event_time: {np.unique(labels)}')
 
     return np.array(spectrogram), np.array(labels)
