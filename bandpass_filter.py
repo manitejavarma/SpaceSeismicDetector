@@ -102,8 +102,8 @@ def filter_data(stream_file=None, plot=False):
         plt.legend()
         plt.show()
 
-data_directory = f'{DATA_DIR}/lunar/training/data/S12_GradeA/'
-test_filename = 'xa.s12.00.mhz.1970-03-25HR00_evid00003'
-mseed_file = f'{data_directory}{test_filename}.mseed'
-stream_file = load_single_file(mseed_file, file_type="mseed")
-filter_data(stream_file=stream_file, plot=True)
+#data_directory = f'{DATA_DIR}/lunar/training/data/S12_GradeA/'
+#test_filename = 'xa.s12.00.mhz.1970-03-25HR00_evid00003'
+#mseed_file = f'{data_directory}{test_filename}.mseed'
+#stream_file = load_single_file(mseed_file, file_type="mseed")
+#filter_data(stream_file=stream_file, plot=True)
